@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Ticketo5 - A Ticketing Platform</h1>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <h2>Welcome to Ticketo5</h2>
+        <p>
+            Ticketo5 is a sample ticketing platform application
+            that implements basic CRUD functionality
+            with EF Relation and code-first approach
+            using ASP.NET Core MVC web application.
+        </p>
+    </div>
+    <div class="col-md-4">
+        <h2>Getting Started</h2>
+        <p>Start ticketing now.</p>
+        @{ 
+            var newTicketRoute = String.IsNullOrEmpty(User.Identity.Name) ? "./Identity/Account/Register" : "/Tickets/Create";
+        }
+        <p><a href="@newTicketRoute" class="btn btn-default">Create New Ticket &raquo;</a></p>
+    </div>
+</div>

@@ -1,0 +1,164 @@
+﻿@model PaginatedList<Ticketo5.Models.Ticket>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="row">
+    <div class="col-md-offset-20 col-md-10">
+        <h1>Tickets</h1>
+        <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+    </div>
+</div>
+
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Name: <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" />
+            Status : @Html.DropDownList("status", "All")
+            <input type="hidden" name="sortOrder" value="@ViewData["CurrentSort"]" />
+            <input type="hidden" name="status" value="@ViewData["CurrentStatus"]" />
+            <input type="hidden" name="pageNumber" value="@(Model.PageIndex)" />
+            <input type="hidden" name="currentFilter" value="@ViewData["CurrentFilter"]" />
+            <input type="hidden" name="myAssignedTicket" value="@ViewData["ShowAssigned"]" />
+            <input type="hidden" name="myOwnedTicket" value="@ViewData["ShowOwned"]" />
+            <input type="submit" value="Search" class="btn btn-outline-primary" /> |
+            <a asp-action="Index">Reset All Filter</a>
+        </p>
+    </div>
+
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-status="@ViewData["CurrentStatus"]"
+       asp-route-pageNumber="@(Model.PageIndex)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       asp-route-myAssignedTicket="true"
+       asp-route-myOwnedTicket="false"
+       name="myAssignedTicket" value="@ViewData["ShowAssigned"]" class="btn btn-group-toggle">Assigned By Me</a>
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-status="@ViewData["CurrentStatus"]"
+       asp-route-pageNumber="@(Model.PageIndex)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       asp-route-myAssignedTicket="false"
+       asp-route-myOwnedTicket="true"
+       name="myOwnedTicket" value="@ViewData["ShowOwned"]" class="btn btn-group-toggle">Assigned To Me</a>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["NameSortParm"]"
+                   asp-route-status="@ViewData["CurrentStatus"]"
+                   asp-route-pageNumber="@(Model.PageIndex)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-myAssignedTicket="@ViewData["ShowAssigned"]"
+                   asp-route-myOwnedTicket="@ViewData["ShowOwned"]">Name</a>
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                Assigned By
+            </th>
+            <th>
+                Owned By
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["DateSortParm"]"
+                   asp-route-status="@ViewData["CurrentStatus"]"
+                   asp-route-pageNumber="@(Model.PageIndex)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-myAssignedTicket="@ViewData["ShowAssigned"]"
+                   asp-route-myOwnedTicket="@ViewData["ShowOwned"]">Created On</a>
+            </th>
+            <th>
+                Action
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.assignedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ownedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.category)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.createdOn)
+                </td>
+                <td>
+                    @if (item.assignedBy == User.Identity.Name)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a>
+                        <span> | </span> <a asp-action="Details" asp-route-id="@item.ID"> Details </a>
+                        <span> | </span> <a asp-action="Delete" asp-route-id="@item.ID"> Delete </a>
+                        @if (item.status != Status.Closed)
+                        {
+                            <span> | </span> <a asp-action="Update" asp-route-id="@item.ID">
+                                @if (item.status == Status.Open)
+                                {
+                                    <span> Set In Progress </span>
+                                }
+                                else
+                                {
+                                    <span> Set Closed </span>
+                                }
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-status="@ViewData["CurrentStatus"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-myAssignedTicket=@ViewData["ShowAssigned"]
+   asp-route-myOwnedTicket=@ViewData["ShowOwned"]
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-status="@ViewData["CurrentStatus"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-myAssignedTicket=@ViewData["ShowAssigned"]
+   asp-route-myOwnedTicket=@ViewData["ShowOwned"]
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
